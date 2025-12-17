@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bo Moldenhauer - Photography Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0f0f0f;
+      color: #f5f5f5;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    header {
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 15, 15, 0.9);
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+    header h1 { font-size: 1.5rem; letter-spacing: 1px; }
+    :root { --display-font: 'Playfair Display', serif; }
+    body.font-playfair { --display-font: 'Playfair Display', serif; }
+    body.font-cormorant { --display-font: 'Cormorant Garamond', serif; }
+    body.font-montserrat { --display-font: 'Montserrat', sans-serif; }
+    h1, h2, h3, .contact h3, footer { font-family: var(--display-font); }
+    nav a {
+      margin-left: 2rem;
+      color: #f5f5f5;
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 0.95rem;
+      transition: opacity 0.3s ease;
+    }
+    nav a:hover { opacity: 0.7; }
+    .font-switcher {
+      margin-left: 1.5rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #f5f5f5;
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .hero {
+      height: 85vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat fixed;
+    }
+    .hero h2 {
+      font-size: 3.5rem;
+      font-weight: 600;
+      max-width: 900px;
+      line-height: 1.2;
+    }
+    .hero h2 .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: cascade 800ms cubic-bezier(.2,.8,.2,1) forwards;
+      animation-delay: calc(var(--i) * 150ms + 200ms);
+      margin-right: 0.4rem;
+    }
+    @keyframes cascade { to { opacity: 1; transform: translateY(0); } }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .hero h2 .word { animation: none; opacity: 1; transform: none; }
+      .gallery img, .series-gallery img { animation: none; transition: none; transform: none; }
+    }
+
+    section { padding: 6rem 4rem; }
+    
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    .gallery img {
+      width: 100%;
+      height: 450px;
+      object-fit: cover;
+      border-radius: 4px;
+      transition: transform 400ms cubic-bezier(.2,.8,.2,1), opacity 400ms ease;
+      transform: scale(1.04);
+      opacity: 0;
+    }
+
+    .series-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .series-gallery img {
+      width: 100%;
+      height: 550px;
+      object-fit: cover;
+      border-radius: 4px;
+      transition: transform 400ms cubic-bezier(.2,.8,.2,1), opacity 400ms ease;
+      transform: scale(1.04);
+      opacity: 0;
+    }
+
+    .gallery img.animate-in, .series-gallery img.animate-in {
+      animation: imgFadeZoomIn 800ms cubic-bezier(.2,.8,.2,1) forwards;
+      animation-delay: calc(var(--i) * 100ms);
+    }
+    @keyframes imgFadeZoomIn { to { transform: scale(1); opacity: 1; } }
+    
+    .gallery img:hover, .series-gallery img:hover { transform: scale(0.98); opacity: 0.9; }
+    
+    .series { max-width: 1100px; margin: 0 auto; text-align: center; }
+    .series h3 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .series p { max-width: 600px; margin: 0 auto 2rem auto; opacity: 0.8; }
+
+    .about { max-width: 700px; margin: auto; text-align: center; }
+    .about h3 { font-size: 2.5rem; margin-bottom: 1.5rem; }
+    .about p { font-size: 1.1rem; opacity: 0.9; }
+
+    .contact { max-width: 600px; margin: auto; text-align: center; padding-bottom: 8rem; }
+    .contact h3 { font-size: 2.5rem; margin-bottom: 1.5rem; }
+    .contact p { margin-bottom: 2.5rem; font-size: 1.1rem; opacity: 0.9; }
+    .contact a.cta-button {
+      display: inline-block;
+      padding: 1rem 3rem;
+      background: #f5f5f5;
+      color: #0f0f0f;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .contact a.cta-button:hover { background: #e0e0e0; transform: translateY(-2px); }
+    
+    footer { padding: 3rem; text-align: center; font-size: 0.9rem; opacity: 0.6; border-top: 1px solid rgba(255,255,255,0.05); }
+    
+    @media (max-width: 768px) {
+      header { padding: 1.5rem 2rem; flex-direction: column; gap: 1rem; }
+      nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+      nav a { margin-left: 0; }
+      .font-switcher { margin-left: 0; margin-top: 0.5rem; }
+      .hero h2 { font-size: 2.5rem; }
+      section { padding: 4rem 2rem; }
+      .gallery img, .series-gallery img { height: 400px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bo Moldenhauer</h1>
+    <nav>
+      <a href="#work">Selected Work</a>
+      <a href="#series">Fur Coat Series</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <select id="fontSwitch" class="font-switcher" aria-label="Choose display font">
+        <option value="playfair">Playfair (Classic)</option>
+        <option value="cormorant">Cormorant (Elegant)</option>
+        <option value="montserrat">Montserrat (Modern)</option>
+      </select>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h2>Capturing moments, emotion, and the natural light of New York City.</h2>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const h = document.querySelector('.hero h2');
+      if (h) {
+        const words = h.textContent.trim().split(/\s+/);
+        h.innerHTML = words.map((w, i) => `<span class="word" style="--i:${i}">${w}</span>`).join(' ');
+      }
+
+      const observerOptions = { threshold: 0.1 };
+      const imgObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            const delay = img.style.getPropertyValue('--i') || 0;
+            setTimeout(() => {
+                img.classList.add('animate-in');
+            }, delay * 100);
+            observer.unobserve(img);
+          }
+        });
+      }, observerOptions);
+
+      const imgs = document.querySelectorAll('.gallery img, .series-gallery img');
+      imgs.forEach((img, i) => {
+        img.style.setProperty('--i', i % 4);
+        imgObserver.observe(img);
+      });
+
+      const fontSwitch = document.getElementById('fontSwitch');
+      const applyFont = (v) => {
+        document.body.classList.remove('font-playfair','font-cormorant','font-montserrat');
+        if (v === 'cormorant') document.body.classList.add('font-cormorant');
+        else if (v === 'montserrat') document.body.classList.add('font-montserrat');
+        else document.body.classList.add('font-playfair');
+      };
+      const saved = localStorage.getItem('displayFont') || 'playfair';
+      applyFont(saved);
+      if (fontSwitch) {
+        fontSwitch.value = saved;
+        fontSwitch.addEventListener('change', (e) => {
+          const v = e.target.value;
+          applyFont(v);
+          localStorage.setItem('displayFont', v);
+        });
+      }
+    });
+  </script>
+
+  <section id="work">
+    <div class="gallery">
+      <img src="https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=1200&q=80" alt="Forest landscape" loading="lazy" />
+      <img src="https://images.unsplash.com/photo-1493514789931-5f75147331f3?auto=format&fit=crop&w=1200&q=80" alt="Mountain foggy view" loading="lazy" />
+      <img src="https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1200&q=80" alt="Beach coastline" loading="lazy" />
+      <img src="https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?auto=format&fit=crop&w=1200&q=80" alt="City street details" loading="lazy" />
+      <img src="https://images.unsplash.com/photo-1517816743773-6e0fd518b4a6?auto=format&fit=crop&w=1200&q=80" alt="Portrait in nature" loading="lazy" />
+      <img src="https://images.unsplash.com/photo-1519055548599-6d4d129508c4?auto=format&fit=crop&w=1200&q=80" alt="Architectural detail" loading="lazy" />
+    </div>
+  </section>
+
+  <section id="series">
+    <div class="series">
+      <h3>The Fur Coat Series</h3>
+      <p>A focused editorial exploring texture, color, and character against the backdrop of New York City landmarks.</p>
+      <div class="series-gallery">
+        <img src="assets/_DSC2979.JPG" alt="Man in multi-color fur coat sitting in a clothing store" loading="lazy" />
+        <img src="assets/_DSC3066.JPG" alt="Man in fur coat overlooking Central Park skyline" loading="lazy" />
+        <img src="assets/_DSC3032.JPG" alt="Man in fur coat standing outside Ralph Lauren store" loading="lazy" />
+        <img src="assets/_DSC3046.JPG" alt="Man in fur coat looking at Bethesda Fountain" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="about">
+      <h3>About Bo</h3>
+      <p>I am a New York City based photographer focused on capturing authentic moments and meaningful stories. My work blends cinematic grit with elegant simplicity to create timeless imagery. I specialize in editorial, lifestyle, and portrait photography.</p>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact">
+      <h3>Let's Collaborate</h3>
+      <p>Available for bookings, editorials, and collaborative projects in NYC and worldwide. Reach out to discuss your vision.</p>
+      <a href="mailto:boudich@live.com.ph" class="cta-button">Get in Touch</a>
+    </div>
+  </section>
+
+  <footer>&copy; 2025 Bo Moldenhauer Photography, NYC. All rights reserved.</footer>
+</body>
+</html>
