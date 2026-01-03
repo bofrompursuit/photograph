@@ -226,6 +226,48 @@
     }
     .modal .hint { font-size: 0.85rem; opacity: 0.8; margin-top: 0.25rem; }
 
+    /* Conceptualize with AI section */
+    .conceptualize {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      padding: 2rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .conceptualize .top {
+      display:flex;
+      gap:1rem;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:1rem;
+    }
+    .conceptualize label { font-size:0.9rem; opacity:0.9; margin-right:0.5rem; }
+    .conceptualize .controls { display:flex; gap:0.5rem; align-items:center; }
+    .conceptualize select, .conceptualize textarea {
+      background: rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.06);
+      color:inherit;
+      padding:0.6rem 0.75rem;
+      border-radius:6px;
+      font-size:0.95rem;
+    }
+    .conceptualize textarea { width:100%; min-height:140px; resize:vertical; margin-top:0.75rem; }
+    .conceptualize .templates { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem; }
+    .conceptualize .template { background: rgba(255,255,255,0.04); padding:0.45rem 0.6rem; border-radius:6px; cursor:pointer; font-size:0.9rem; }
+    .conceptualize .template:hover { transform: translateY(-2px); }
+    .conceptualize .actions { display:flex; gap:0.5rem; margin-top:0.75rem; }
+    .conceptualize button { cursor:pointer; border:0; padding:0.6rem 0.9rem; border-radius:6px; font-weight:600; }
+    .conceptualize .copy { background:#4b5563; color:#fff; }
+    .conceptualize .open { background:linear-gradient(135deg,#34d399,#06b6d4); color:#062021; }
+    .conceptualize .share { background:#f5f5f5; color:#0f0f0f; }
+    .conceptualize .small { font-size:0.85rem; opacity:0.8; margin-top:0.5rem; }
+    @media (max-width:600px) { .conceptualize .top{flex-direction:column;align-items:flex-start;} .conceptualize textarea{min-height:120px;} }
+
+    /* tiny toast used by the Conceptualize section */
+    .concept-toast { position:fixed; right:1.5rem; bottom:4.8rem; background:rgba(0,0,0,0.8); color:#fff; padding:0.6rem 0.9rem; border-radius:6px; z-index:1200; display:none; }
+
   </style>
 </head>
 <body>
@@ -337,6 +379,76 @@
         window.location.href = mailto;
         closeBookModal();
       });
+
+      /* Conceptualize with AI (client-side prompt composer) */
+      const aiModel = document.getElementById('aiModel');
+      const promptInput = document.getElementById('promptInput');
+      const templates = document.querySelectorAll('.conceptualize .template');
+      const copyBtn = document.getElementById('copyPrompt');
+      const openBtn = document.getElementById('openProvider');
+      const shareBtn = document.getElementById('sharePrompt');
+
+      const toast = document.createElement('div');
+      toast.className = 'concept-toast';
+      document.body.appendChild(toast);
+      const showToast = (msg) => {
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2200);
+      };
+
+      templates.forEach(t => {
+        t.addEventListener('click', () => {
+          const txt = t.getAttribute('data-template') || '';
+          promptInput.value = txt;
+          promptInput.focus();
+        });
+      });
+
+      copyBtn.addEventListener('click', async () => {
+        if (!promptInput.value.trim()) { showToast('Add a prompt first'); return; }
+        await navigator.clipboard.writeText(promptInput.value);
+        showToast('Prompt copied to clipboard');
+      });
+
+      openBtn.addEventListener('click', async () => {
+        if (!promptInput.value.trim()) { showToast('Add a prompt first'); return; }
+        try {
+          await navigator.clipboard.writeText(promptInput.value);
+          showToast('Prompt copied — opening provider...');
+        } catch (err) {
+          showToast('Could not copy prompt — opening provider');
+        }
+        const model = aiModel.value;
+        let url = '#';
+        if (model === 'chatgpt') url = 'https://chat.openai.com/';
+        else if (model === 'gemini') url = 'https://ai.google/preview';
+        else if (model === 'grok') url = 'https://x.com/grok';
+        window.open(url, '_blank');
+      });
+
+      shareBtn.addEventListener('click', async () => {
+        const text = promptInput.value || '';
+        const hash = '#prompt=' + encodeURIComponent(text);
+        const shareUrl = window.location.origin + window.location.pathname + hash;
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showToast('Share link copied to clipboard');
+        } catch (err) {
+          promptInput.value = shareUrl;
+          showToast('Share link ready in the prompt box');
+        }
+      });
+
+      // Load prompt from URL hash if present
+      const loadPromptFromHash = () => {
+        const h = window.location.hash;
+        if (h && h.startsWith('#prompt=')) {
+          const p = decodeURIComponent(h.replace('#prompt=', ''));
+          promptInput.value = p;
+        }
+      };
+      loadPromptFromHash();
     });
   </script>
 
@@ -368,6 +480,39 @@
     <div class="about">
       <h3>About Bo</h3>
       <p>I am a New York City based photographer focused on capturing authentic moments and meaningful stories. My work blends cinematic grit with elegant simplicity to create timeless imagery. I specialize in editorial, lifestyle, and portrait photography.</p>
+    </div>
+  </section>
+
+  <section id="conceptualize" aria-labelledby="conceptTitle">
+    <div class="conceptualize">
+      <div class="top">
+        <h3 id="conceptTitle">Conceptualize with AI</h3>
+        <div class="controls">
+          <label for="aiModel">Model</label>
+          <select id="aiModel" aria-label="Choose model">
+            <option value="grok">Grok (xAI)</option>
+            <option value="gemini">Gemini (Google)</option>
+            <option value="chatgpt" selected>ChatGPT (OpenAI)</option>
+          </select>
+        </div>
+      </div>
+
+      <textarea id="promptInput" placeholder="Describe the shoot: mood, subjects, lighting, colors, references..."></textarea>
+
+      <div class="templates" aria-hidden="false">
+        <div class="template" data-template="Moodboard: cinematic, warm golden hour light, cinematic color grading, shallow depth of field. Provide shot ideas, color palette and wardrobe suggestions.">Moodboard</div>
+        <div class="template" data-template="Shot list: wide establishing, full-length portrait, close-up detail, candid street moment. Include lens, focal length and camera suggestions.">Shot list</div>
+        <div class="template" data-template="Lighting plan: natural window light, reflectors, softbox backlight, contrast control. Include modifiers, distances and angles.">Lighting</div>
+        <div class="template" data-template="Styling & props: bold textures, neutral backdrop, vintage accessories, color pops—suggest wardrobe and props and mood references.">Styling</div>
+      </div>
+
+      <div class="actions">
+        <button class="copy" id="copyPrompt">Copy prompt</button>
+        <button class="open" id="openProvider">Open provider (copied)</button>
+        <button class="share" id="sharePrompt">Save / Share</button>
+      </div>
+
+      <div class="small">Tip: pick a template, tweak the prompt, then copy or open the chosen model. Shareable links embed the prompt in the URL.</div>
     </div>
   </section>
 
